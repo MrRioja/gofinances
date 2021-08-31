@@ -11,13 +11,13 @@ interface Props extends TextInputProps {
   name: string;
 }
 
-export function InputForm({ control, name, ...rest }: Props) {
+export function InputForm({ control, name, value, ...rest }: Props) {
   return (
     <Container>
       <Controller
         control={control}
         render={({ field: { onChange, value } }) => (
-          <Input {...rest} onChange={onChange} value={value} />
+          <Input {...rest} onChangeText={onChange} value={value} />
         )}
         name={name}
       />
