@@ -1,7 +1,10 @@
 import * as Yup from "yup";
-import React, { useState } from "react";
+import uuid from "react-native-uuid";
 import { useForm } from "react-hook-form";
+import React, { useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert, Keyboard, Modal, TouchableWithoutFeedback } from "react-native";
 
 import { CategorySelect } from "../CategorySelect";
@@ -21,15 +24,15 @@ import {
 
 interface FormData {
   name: string;
-  price: string;
+  amount: string;
 }
 
 const schema = Yup.object().shape({
   name: Yup.string().required("The name is mandatory"),
-  price: Yup.number()
+  amount: Yup.number()
     .typeError("Enter a numeric value")
     .positive("Value cannot be negative")
-    .required("The price is mandatory"),
+    .required("The amount is mandatory"),
 });
 
 export function Register() {
@@ -41,9 +44,12 @@ export function Register() {
     name: "Category",
   });
 
+  const navigation = useNavigation();
+
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
@@ -59,7 +65,7 @@ export function Register() {
     setCategoryModalOpen(false);
   }
 
-  function handleRegister(form: FormData) {
+  async function handleRegister(form: FormData) {
     if (!transactionType) {
       return Alert.alert("Select transaction type");
     }
@@ -68,12 +74,37 @@ export function Register() {
       return Alert.alert("Select category");
     }
 
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: form.name,
-      price: form.price,
+      amount: form.amount,
       transactionType,
       category: category.key,
+      date: new Date(),
     };
+
+    try {
+      const dataKey = "@gofincance:transactions";
+
+      const data = await AsyncStorage.getItem(dataKey);
+
+      const currentData = data ? JSON.parse(data) : [];
+
+      const dataFormated = [...currentData, newTransaction];
+
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormated));
+
+      reset();
+      setTransactionType("");
+      setCategory({
+        key: "category",
+        name: "Category",
+      });
+
+      navigation.navigate("Listing");
+    } catch (error) {
+      Alert.alert("Unable to save");
+    }
   }
 
   return (
@@ -94,11 +125,11 @@ export function Register() {
               error={errors.name && errors.name.message}
             />
             <InputForm
-              name="price"
+              name="amount"
               control={control}
-              placeholder="Price"
+              placeholder="Amount"
               keyboardType={"numeric"}
-              error={errors.price && errors.price.message}
+              error={errors.amount && errors.amount.message}
             />
 
             <TransactionsTypes>
