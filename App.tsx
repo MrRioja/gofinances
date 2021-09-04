@@ -1,6 +1,7 @@
 import "react-native-gesture-handler";
 import "intl";
 import "intl/locale-data/jsonp/pt-BR";
+import "intl/locale-data/jsonp/en-US";
 
 import React from "react";
 import AppLoading from "expo-app-loading";
