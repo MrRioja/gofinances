@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
+import { useAuth } from "../../Hooks/auth";
 import { useFocusEffect } from "@react-navigation/native";
 import { VictoryPie } from "victory-native";
 import { ActivityIndicator } from "react-native";
@@ -49,6 +50,7 @@ export function Summary() {
   const [totalByCategory, setTotalByCategory] = useState<CategoryData[]>([]);
 
   const theme = useTheme();
+  const { user } = useAuth();
 
   function handleDateChange(action: "prev" | "next") {
     if (action === "prev") {
@@ -61,7 +63,7 @@ export function Summary() {
   async function loadData() {
     setIsLoading(true);
 
-    const dataKey = "@goFinance:transactions";
+    const dataKey = `@goFinance:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const responseFormatted = response ? JSON.parse(response) : [];
 
