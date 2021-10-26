@@ -85,13 +85,10 @@ function AuthProvider({ children }: AuthProviderProps) {
   async function signInWithApple() {
     try {
       const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
+        requestedScopes: [0, 1],
       });
 
-      if (credential) {
+      if (credential.authorizationCode) {
         const name = credential.fullName!.givenName!;
         const photo = `https://ui-avatars.com/api/?name=${name}&length=1`;
 
