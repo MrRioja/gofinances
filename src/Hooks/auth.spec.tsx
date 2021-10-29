@@ -26,7 +26,7 @@ describe("Auth Hook", () => {
 
   it("user should not connect if cancel authentication with Apple account", async () => {
     const appleMocked = mocked(signInAsync as any);
-    appleMocked.mockReturnValue({});
+    appleMocked.mockReturnValueOnce({});
 
     const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
 
