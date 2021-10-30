@@ -151,6 +151,7 @@ export function Register() {
             </TransactionsTypes>
 
             <CategorySelectButton
+              testID="button-category"
               title={category.name}
               onPress={handleOpenSelectCategoryModal}
             />
