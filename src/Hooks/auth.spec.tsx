@@ -8,7 +8,7 @@ jest.mock("expo-apple-authentication");
 describe("Auth Hook", () => {
   it("should be able to sign in with Apple account existing", async () => {
     const appleMocked = mocked(signInAsync as any);
-    appleMocked.mockReturnValue({
+    appleMocked.mockReturnValueOnce({
       authorizationCode: "123",
       email: "test@email.com",
       fullName: {
@@ -33,5 +33,15 @@ describe("Auth Hook", () => {
     await act(() => result.current.signInWithApple());
 
     expect(result.current.user).not.toHaveProperty("id");
+  });
+
+  it("should be error with incorrectly Apple parameters", async () => {
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    try {
+      await act(() => result.current.signInWithApple());
+    } catch (error) {
+      expect(result.current.user).toEqual({});
+    }
   });
 });
