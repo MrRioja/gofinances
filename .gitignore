@@ -56,3 +56,6 @@ web-build/
 
 # Jest
 coverage/
+
+# My editions
+resources/
